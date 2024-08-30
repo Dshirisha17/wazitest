@@ -1,0 +1,23 @@
+name: Test SSH Login and Commands
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-login:
+    runs-on: self-hosted
+    steps:
+      - name: Install sshpass
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update && sudo apt-get install -y sshpass
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            choco install sshpass -y
+          fi
+
+      - name: Test SSH Login and Run Commands
+        run: |
+          sshpass -p "sandhata123" ssh -o StrictHostKeyChecking=no -p portnumber ibmsys1@10.10.1.180 << 'EOF'
+          ls -lrt
+          echo "Login successful and commands executed."
+          EOF
