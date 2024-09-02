@@ -8,7 +8,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Run ls -lrt on Remote Server using Password Authentication
+    - name: Run ls -lrt on Remote Server using Plink
       run: |
-        echo s3cure | ssh -o StrictHostKeyChecking=no -p 2222 ibmuser@10.10.1.180 "ls -lrt"
+        plink -batch -P 2222 -pw s3cure ibmuser@10.10.1.180 "ls -lrt"
       shell: cmd
