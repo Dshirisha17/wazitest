@@ -1,31 +1,22 @@
-name: Test SSH Login and Commands
+name: SSH Connection
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  test-login:
+  ssh-job:
     runs-on: self-hosted
+
     steps:
-      - name: Install sshpass on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update && sudo apt-get install -y sshpass
+    - name: Connect via SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'echo Connected successfully'
+      shell: bash
 
-      - name: Install sshpass on Windows
-        if: runner.os == 'Windows'
-        run: |
-          choco install sshpass -y
-
-      - name: Test SSH Login and Run Commands on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sshpass -p "sandhata123" ssh -o StrictHostKeyChecking=no -p portnumber ibmsys1@10.10.1.180 << 'EOF'
-          ls -lrt
-          echo "Login successful and commands executed."
-          EOF
-
-      - name: Test SSH Login and Run Commands on Windows
-        if: runner.os == 'Windows'
-        run: |
-          sshpass -p "sandhata123" ssh -o StrictHostKeyChecking=no -p portnumber ibmsys1@10.10.1.180 "ls -lrt; echo 'Login successful and commands executed.'"
+    - name: Run Commands on Remote Server
+      run: |
+        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'your_command_here'
+      shell: bash
