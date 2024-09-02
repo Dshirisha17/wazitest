@@ -26,4 +26,4 @@ jobs:
 
         # Execute the SSH command
         ssh.exe -o StrictHostKeyChecking=no -p $port $username@$host 'whoami'
-      shell: pwsh
+      shell: cmd
