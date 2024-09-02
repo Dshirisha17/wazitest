@@ -8,12 +8,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Connect via SSH
+    - name: Run ls -lrt on Remote Server using Password Authentication
       run: |
-        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "echo Connected successfully"
-      shell: cmd
-
-    - name: Run Commands on Remote Server
-      run: |
-        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "ls -lrt"
+        echo sandhata123 | ssh -o StrictHostKeyChecking=no -p 2222 ibmsys1@10.10.1.180 "ls -lrt"
       shell: cmd
