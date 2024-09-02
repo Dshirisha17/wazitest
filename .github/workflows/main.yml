@@ -12,5 +12,5 @@ jobs:
 
       - name: Execute Command on Linux Machine
         run: |
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure ls 
+          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure ls
  
