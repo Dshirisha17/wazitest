@@ -12,4 +12,5 @@ jobs:
 
       - name: Execute Command on Linux Machine
         run: |
-          plink -ssh -pw "s3cure" ibmuser@10.10.1.180 "echo 'Logged in successfully' && ls -lrt"
+          plink.exe -ssh ibmuser@10.10.1.180 -P 2222 -pw s3cure ls 
+ 
