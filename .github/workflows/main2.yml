@@ -1,4 +1,4 @@
-name: SSH Login and run script
+name: SSH Login and run scripts 
 
 on:
   workflow_dispatch:
