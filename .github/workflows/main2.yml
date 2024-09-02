@@ -11,28 +11,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Execute Command on Linux Machine
-        shell: cmd
         run: |
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure ^
-            "export JAVA_HOME=/usr/lpp/java/J8.0_64; ^
-            export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:\$PATH; ^
-            echo Logged in successfully; ^
-            /dbbibm/dbbv2.0.2/bin/groovyz /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy ^
-            --workspace /u/ibmuser/dbbwazi1/dbb-zappbuild/samples ^
-            --application APP4 ^
-            --outDir /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4 ^
-            --hlq ADCDK.NEXTGEN.LOAD ^
-            --fullBuild"
+         plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "export JAVA_HOME=/usr/lpp/java/J8.0_64; export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:\$PATH; echo Logged in successfully; /dbbibm/dbbv2.0.2/bin/groovyz /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy --workspace /u/ibmuser/dbbwazi1/dbb-zappbuild/samples --application APP4 --outDir /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4 --hlq ADCDK.NEXTGEN.LOAD --fullBuild"
 
-          for /f "delims=" %%i in ('plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "ls -t /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/ | head -n 1"') do set BUILD_ID=%%i
-
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure ^
-            "/dbbibm/dbbv2.0.2/bin/groovyz /u/ibmuser/dbb/Pipeline/PackageBuildOutputs/PackageBuildOutputs.groovy ^
-            --workDir /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/%BUILD_ID% ^
-            --tarFileName APP4.tar  ^
-            --application APP4 ^
-            --addExtension ^
-            --branch main ^
-            --generateWaziDeployAppManifest  ^
-            --versionName rel-1.0.0 ^
-            --verbose"
+      - name: Retrieve Latest Build Identifier
+        id: get_build_id
+        run: |
+          $build_id = plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure `
+          "ls -t /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/ | head -n 1"
+          echo "BUILD_ID=$build_id" >> $GITHUB_ENV
