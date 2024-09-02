@@ -12,4 +12,5 @@ jobs:
 
       - name: Execute Command on Linux Machine
         run: |
-         plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "export JAVA_HOME=/usr/lpp/java/J8.0_64; export PATH=\$JAVA_HOME/bin:\$PATH; echo Logged in successfully; /dbbibm/dbbv2.0.2/bin/groovyz /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy --workspace /u/ibmuser/dbbwazi1/dbb-zappbuild/samples --application APP4 --outDir /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP1 --hlq ADCDK.NEXTGEN.LOAD --fullBuild"
+         plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "export JAVA_HOME=/usr/lpp/java/J8.0_64; export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:\$PATH; echo Logged in successfully; /dbbibm/dbbv2.0.2/bin/groovyz /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy --workspace /u/ibmuser/dbbwazi1/dbb-zappbuild/samples --application APP4 --outDir /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP1 --hlq ADCDK.NEXTGEN.LOAD --fullBuild"
+
