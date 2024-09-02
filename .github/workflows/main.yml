@@ -1,4 +1,4 @@
-name: SSH Command via CMD on Windows
+name: SSH Command via CMD on Windows with sshpass
 
 on:
   push:
@@ -19,11 +19,7 @@ jobs:
         $username = "ibmuser"
         $password = "s3cure"
         $port = 2222
-        
-        # Create a credential object
-        $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
-        $credential = New-Object System.Management.Automation.PSCredential ($username, $securePassword)
 
-        # Execute the SSH command
-        ssh.exe -o StrictHostKeyChecking=no -p $port $username@$host 'whoami'
+        # Run the SSH command with sshpass (assuming sshpass.exe is in PATH)
+        sshpass.exe -p "$password" ssh -o StrictHostKeyChecking=no -p "$port" "$username@$host" 'whoami'
       shell: cmd
