@@ -1,9 +1,7 @@
-name: SSH Login with Password
+name: SSH Login with password
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   ssh-login:
@@ -12,10 +10,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install sshpass
-        run: |
-          choco install sshpass # Ensure sshpass is installed on your Windows runner
-
       - name: Execute Command on Linux Machine
         run: |
-          sshpass -p "s3cure" ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'echo "Logged in successfully" && uname -a'
+          plink -ssh -pw "s3cure" ibmuser@10.10.1.180 -p 2222 "echo 'Logged in successfully' && ls -lrt"
