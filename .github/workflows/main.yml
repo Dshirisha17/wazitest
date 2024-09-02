@@ -12,4 +12,4 @@ jobs:
 
       - name: Execute Command on Linux Machine
         run: |
-          plink -ssh -pw "s3cure" ibmuser@10.10.1.180 -p 2222 "echo 'Logged in successfully' && ls -lrt"
+          plink -ssh -pw "s3cure" ibmuser@10.10.1.180 "echo 'Logged in successfully' && ls -lrt"
