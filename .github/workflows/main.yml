@@ -15,5 +15,5 @@ jobs:
 
     - name: Run Commands on Remote Server
       run: |
-        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "your_command_here"
+        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "ls -lrt"
       shell: cmd
