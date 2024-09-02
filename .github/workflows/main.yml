@@ -1,4 +1,4 @@
-name: SSH Command via CMD
+name: SSH Command via CMD on Windows
 
 on:
   push:
@@ -13,16 +13,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install sshpass
-      run: sudo apt-get install -y sshpass
-
-    - name: Run SSH command
+    - name: Run SSH command on Windows
       run: |
-        # Define variables directly in the script
-        SSH_HOST="10.10.1.180"
-        SSH_USERNAME="ibmuser"
-        SSH_PASSWORD="s3cure"
-        SSH_PORT="2222"
+        $host = "10.10.1.180"
+        $username = "ibmuser"
+        $password = "s3cure"
+        $port = 2222
         
-        # Execute the SSH command using sshpass
-        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USERNAME@$SSH_HOST" 'whoami'
+        # Create a credential object
+        $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+        $credential = New-Object System.Management.Automation.PSCredential ($username, $securePassword)
+
+        # Execute the SSH command
+        ssh.exe -o StrictHostKeyChecking=no -p $port $username@$host 'whoami'
+      shell: pwsh
