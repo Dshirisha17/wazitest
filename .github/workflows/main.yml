@@ -20,4 +20,4 @@ jobs:
 
         # Run the SSH command with sshpass (assuming sshpass.exe is in PATH)
         sshpass -p 's3cure' ssh ibmuser@10.10.1.180 -p 2222 'whoami'
-      shell: cmd
+      
