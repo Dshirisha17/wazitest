@@ -2,9 +2,6 @@ name: SSH Connection
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   ssh-job:
@@ -13,10 +10,10 @@ jobs:
     steps:
     - name: Connect via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'echo Connected successfully'
-      shell: bash
+        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "echo Connected successfully"
+      shell: cmd
 
     - name: Run Commands on Remote Server
       run: |
-        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'your_command_here'
-      shell: bash
+        ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 "your_command_here"
+      shell: cmd
