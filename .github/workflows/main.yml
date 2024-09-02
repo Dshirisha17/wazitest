@@ -1,32 +1,21 @@
-name: SSH Command via PowerShell on Windows
+name: SSH Login with Password
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  ssh-job:
-    runs-on: [self-hosted, windows]
-
+  ssh-login:
+    runs-on: self-hosted
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Run SSH Command using PowerShell
-      run: |
-        $password = ConvertTo-SecureString -String "s3cure" -AsPlainText -Force
-        $cred = New-Object System.Management.Automation.PSCredential ("ibmuser", $password)
-        ssh -Credential $cred -p 2222 ibmuser@10.10.1.180 "whoami"
+      - name: Install sshpass
+        run: |
+          choco install sshpass # Ensure sshpass is installed on your Windows runner
 
-
-
-
-    # - name: Run SSH command on Windows
-    #   run: |
-      #   # $host = "10.10.1.180"
-      #   # $username = "ibmuser"
-      #   # $password = "s3cure"
-      #   # $port = 2222
-
-      #   # Run the SSH command with sshpass (assuming sshpass.exe is in PATH)
-      #   sshpass -p 's3cure' ssh ibmuser@10.10.1.180 -p 2222 'whoami'
- 
+      - name: Execute Command on Linux Machine
+        run: |
+          sshpass -p "s3cure" ssh -o StrictHostKeyChecking=no ibmsys1@10.10.1.180 -p 2222 'echo "Logged in successfully" && uname -a'
