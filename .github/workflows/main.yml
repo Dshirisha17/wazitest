@@ -3,22 +3,23 @@ name: SSH Command via CMD on Windows with sshpass
 on:
   workflow_dispatch:
   
+
 jobs:
   ssh-job:
-    runs-on: self-hosted
+    runs-on: [self-hosted, windows]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Deploying Script
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-          host: "10.10.1.180"
-          username: "ibmuser"
-          password: "s3cure"
-          port: "2222"
-          timeout: 300s
+    - name: Run SSH Command using PowerShell
+      run: |
+        $password = ConvertTo-SecureString -String "${{ secrets.SSH_PASSWORD }}" -AsPlainText -Force
+        $cred = New-Object System.Management.Automation.PSCredential ("ibmuser", $password)
+        ssh -Credential $cred -p 2222 ibmuser@10.10.1.180 "whoami"
+      env:
+        SSH_PASSWORD: "s3cure"
+
 
 
     # - name: Run SSH command on Windows
