@@ -1,8 +1,7 @@
-name: SSH Command via CMD on Windows with sshpass
+name: SSH Command via PowerShell on Windows
 
 on:
   workflow_dispatch:
-  
 
 jobs:
   ssh-job:
@@ -14,11 +13,10 @@ jobs:
 
     - name: Run SSH Command using PowerShell
       run: |
-        $password = ConvertTo-SecureString -String "${{ secrets.SSH_PASSWORD }}" -AsPlainText -Force
+        $password = ConvertTo-SecureString -String "s3cure" -AsPlainText -Force
         $cred = New-Object System.Management.Automation.PSCredential ("ibmuser", $password)
         ssh -Credential $cred -p 2222 ibmuser@10.10.1.180 "whoami"
-      env:
-        SSH_PASSWORD: "s3cure"
+
 
 
 
