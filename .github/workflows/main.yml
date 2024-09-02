@@ -10,5 +10,5 @@ jobs:
     steps:
     - name: Run ls -lrt on Remote Server using Password Authentication
       run: |
-        echo sandhata123 | ssh -o StrictHostKeyChecking=no -p 2222 ibmsys1@10.10.1.180 "ls -lrt"
+        echo s3cure | ssh -o StrictHostKeyChecking=no -p 2222 ibmuser@10.10.1.180 "ls -lrt"
       shell: cmd
