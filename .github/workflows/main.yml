@@ -1,14 +1,28 @@
-name: SSH Connection
+name: SSH Command via CMD
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   ssh-job:
     runs-on: self-hosted
 
     steps:
-    - name: Run ls -lrt on Remote Server using Plink
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+
+    - name: Run SSH command
       run: |
-        plink -batch -P 2222 -pw s3cure ibmuser@10.10.1.180 "ls -lrt"
-      shell: cmd
+        # Define variables directly in the script
+        SSH_HOST="10.10.1.180"
+        SSH_USERNAME="ibmuser"
+        SSH_PASSWORD="s3cure"
+        SSH_PORT="2222"
+        
+        # Execute the SSH command using sshpass
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USERNAME@$SSH_HOST" 'whoami'
