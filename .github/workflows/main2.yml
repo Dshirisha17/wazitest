@@ -18,9 +18,13 @@ jobs:
         id: get_build_id
         run: |
           $build_id = plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure `
-          "ls -t /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/ | head -n 1"
-          echo "BUILD_ID=$build_id" >> $GITHUB_ENV
-          echo $build_id
+            BUILD_ID=$(ls -t /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/ | head -n 1)
+          if [ -z "$BUILD_ID" ]; then
+              echo "Error: BUILD_ID is not set."
+              exit 1
+          fi
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
+          echo "BUILD_ID is $BUILD_ID"
           
       - name: Execute Package Build Outputs Script
         run: |
