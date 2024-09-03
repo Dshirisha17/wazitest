@@ -11,27 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set Up Environment Variables
+      - name: Set Up Environment and Deploy
         run: |
           plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
-            export JAVA_HOME=/usr/lpp/java/J8.0_64 &&
-            export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:/wascfg/v9r0/xacell/xanode1/usr/lpp/IBM/cyp/v3r11/pyz/bin &&
-            export PYTHONPATH=/usr/lpp/IBM/zoautil124/lib:\$PYTHONPATH &&
-            export LD_LIBRARY_PATH=/usr/lpp/IBM/zoautil124/lib:\$LD_LIBRARY_PATH &&
-            echo 'Environment variables set successfully'
-          "
-
-      - name: Verify Required Files
-        run: |
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
-            ls -l /usr/lpp/IBM/zoautil124/lib &&
-            file /usr/lpp/IBM/zoautil124/lib/zoautil.so &&
-            echo 'Verified required files'
-          "
-
-      - name: Deploy Application
-        run: |
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
+            export JAVA_HOME=/usr/lpp/java/J8.0_64 && \
+            export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:/wascfg/v9r0/xacell/xanode1/usr/lpp/IBM/cyp/v3r11/pyz/bin && \
+            export PYTHONPATH=/usr/lpp/IBM/zoautil124/lib:\$PYTHONPATH && \
+            export LD_LIBRARY_PATH=/usr/lpp/IBM/zoautil124/lib:\$LD_LIBRARY_PATH && \
+            echo 'Environment set successfully'
+            
             /wascfg/v9r0/xacell/xanode1/pyenv/gdp/bin/wazideploy-deploy \
               -dp /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/build.20240902.134123.302/deployment_plan.yml \
               -pif /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4/build.20240902.134123.302/APP4.tar \
