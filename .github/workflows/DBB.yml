@@ -9,8 +9,7 @@ env:
   # Clone: 'All-pipeline-scripts/git-clone-ssh.sh' # Script to clone the code from GitHub to z/OS
   DBB_Build: 'wazitest/scripts/DBB_Build.sh' # Script to perform the DBB build on z/OS
 
-# "on" trigger to manually start this workflow. Can add "pull, push..." for auto trigger.
-# see https://docs.github.com/en/actions/learn-github-actions/contexts
+# Trigger for manual start of the workflow. Can also add "pull, push..." for auto-trigger.
 on:
   workflow_dispatch:
 
@@ -27,8 +26,9 @@ jobs:
       MyHlq: ADCDK.NEXTGEN.LOAD # High level qualifier for partitioned data sets created during the build
 
     steps:
+      # Uncomment and configure the clone step if needed
       # - name: Clone repository
-      #   run: ${{ env.DBB_Host }} ${{ env.Clone }} ${{ env.MyRepo }} ${{ env.MyWorkDir }} ${{ env.MyWorkSpace }} ${{ env.MyBranch }}
+      #   run: ${{ env.DBB_login }} "git clone ${{ env.MyRepo }} ${{ env.MyWorkDir }} && cd ${{ env.MyWorkDir }} && git checkout ${{ env.MyBranch }}"
 
       - name: DBB Impact Build
-        run: ${{ env.DBB_Host }} ${{ env.DBB_Build }} ${{ env.MyWorkDir }} ${{ env.MyWorkSpace }} ${{ env.MyApplication }} ${{ env.MyHlq }} --fullBuild
+        run: ${{ env.DBB_login }} "bash ${env.DBB_Build} ${env.MyWorkDir} ${env.MyWorkSpace} ${env.MyApplication} ${env.MyHlq} --fullBuild"
