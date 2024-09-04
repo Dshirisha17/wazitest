@@ -1,46 +1,34 @@
-name: SSH Login and Run Script
+name: Demo-DBB_Build_on_ZOS_With_GitHub_Actions_SSH
 
+# A sample z/OS DBB workflow using GitHub Actions (GHA) with SSH connection
+# Global vars
+env:
+  # SSH connection information
+  DBB_login: 'plink.exe -ssh -batch  ibmuser@10.10.1.180 -P 2222 -pw s3cure' # A valid SSH account on Z. With pre-generated and tested keys in the runner.
+  # Pipeline scripts on z/OS (relative to the SSH user's Home Dir in USS)
+  # Clone: 'All-pipeline-scripts/git-clone-ssh.sh' # Script to clone the code from GitHub to z/OS
+  DBB_Build: 'All-pipeline-scripts/dbb-build.sh' # Script to perform the DBB build on z/OS
+
+# "on" trigger to manually start this workflow. Can add "pull, push..." for auto trigger.
+# see https://docs.github.com/en/actions/learn-github-actions/contexts
 on:
   workflow_dispatch:
 
 jobs:
-  ssh-login:
+  DBB_Build_on_zOS:
     runs-on: self-hosted
-
     env:
-      # Define environment variables for the SSH command
-      JAVA_HOME: /usr/lpp/java/J8.0_64
-      PATH: /usr/lpp/java/J8.0_64/bin:/Rocket/rsusr/ported/bin:$PATH
-      WORKSPACE_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild
-      SAMPLES_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild/samples
-      OUTPUT_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4
-      BUILD_SCRIPT: /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy
-      APPLICATION: APP4
-      HLQ: ADCDK.NEXTGEN.LOAD
-      BUILD_MODE: --fullBuild
+      # Project related variables. GHA automatically fills in relevant repository information for values enclosed in ${{ ... }}.
+      MyRepo: git@github.com:${{ github.repository }}.git # Source code repository URL (SSH)
+      MyBranch: ${{ github.ref }} # Branch on which to run the GHA pipeline
+      MyWorkDir: /u/ibmuser/dbbwazi1/dbb-zappbuild_run_${{ github.run_number }} # Absolute path to directory for storing the clone and build outputs
+      MyWorkSpace: /u/ibmuser/dbbwazi1/dbb-zappbuild/samples # Absolute path to workspace (root) directory containing all required source directories
+      MyApplication: APP4 # Application directory name (relative to MyWorkSpace)
+      MyHlq: ADCDK.NEXTGEN.LOAD # High level qualifier for partitioned data sets created during the build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # - name: Clone repository
+      #   run: ${{ env.DBB_Host }} ${{ env.Clone }} ${{ env.MyRepo }} ${{ env.MyWorkDir }} ${{ env.MyWorkSpace }} ${{ env.MyBranch }}
 
-      - name: Debug Command
-        run: |
-         echo "Running a test command"
-
-
-      # - name: Execute Command on z/OS Machine
-      #   run: |
-      #     plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
-      #     export JAVA_HOME=${{ env.JAVA_HOME }} &&
-      #     export PATH=${{ env.PATH }} &&
-      #     echo 'Environment variables set successfully.' &&
-      #     echo 'Workspace directory: ${WORKSPACE_DIR}' &&
-      #     echo 'Samples directory: ${SAMPLES_DIR}' &&
-      #     echo 'Output directory: ${OUTPUT_DIR}' &&
-      #     /dbbibm/dbbv2.0.2/bin/groovyz ${BUILD_SCRIPT} \
-      #       --workspace ${SAMPLES_DIR} \
-      #       --application ${APPLICATION} \
-      #       --outDir ${OUTPUT_DIR} \
-      #       --hlq ${HLQ} \
-      #       ${BUILD_MODE}
-          # "
+      - name: DBB Impact Build
+        run: ${{ env.DBB_Host }} ${{ env.DBB_Build }} ${{ env.MyWorkDir }} ${{ env.MyWorkSpace }} ${{ env.MyApplication }} ${{ env.MyHlq }} --fullBuild
