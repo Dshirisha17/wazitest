@@ -32,7 +32,6 @@ jobs:
           echo 'Workspace directory: ${WORKSPACE_DIR}' &&
           echo 'Samples directory: ${SAMPLES_DIR}' &&
           echo 'Output directory: ${OUTPUT_DIR}' &&
-          # Execute the build script
           /dbbibm/dbbv2.0.2/bin/groovyz ${BUILD_SCRIPT} \
             --workspace ${SAMPLES_DIR} \
             --application ${APPLICATION} \
