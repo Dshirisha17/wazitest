@@ -1,0 +1,38 @@
+name: SSH Login and Run Script
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-login:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Execute Command on z/OS Machine
+        run: |
+          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
+          export JAVA_HOME=/usr/lpp/java/J8.0_64 &&
+          export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:\$PATH &&
+          echo 'Environment variables set successfully.'
+
+          # Define working directories
+          WORKSPACE_DIR='/u/ibmuser/dbbwazi1/dbb-zappbuild'
+          SAMPLES_DIR='\${WORKSPACE_DIR}/samples'
+          OUTPUT_DIR='\${WORKSPACE_DIR}/build/out/APP4'
+          BUILD_SCRIPT='\${WORKSPACE_DIR}/build.groovy'
+
+          echo 'Workspace directory: \${WORKSPACE_DIR}'
+          echo 'Samples directory: \${SAMPLES_DIR}'
+          echo 'Output directory: \${OUTPUT_DIR}'
+
+          # Execute the build script
+          /dbbibm/dbbv2.0.2/bin/groovyz \${BUILD_SCRIPT} \
+            --workspace \${SAMPLES_DIR} \
+            --application APP4 \
+            --outDir \${OUTPUT_DIR} \
+            --hlq ADCDK.NEXTGEN.LOAD \
+            --fullBuild
+          "
