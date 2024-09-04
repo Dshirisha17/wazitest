@@ -23,19 +23,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Execute Command on z/OS Machine
+      - name: Debug Command
         run: |
-          plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
-          export JAVA_HOME=${{ env.JAVA_HOME }} &&
-          export PATH=${{ env.PATH }} &&
-          echo 'Environment variables set successfully.' &&
-          echo 'Workspace directory: ${WORKSPACE_DIR}' &&
-          echo 'Samples directory: ${SAMPLES_DIR}' &&
-          echo 'Output directory: ${OUTPUT_DIR}' &&
-          /dbbibm/dbbv2.0.2/bin/groovyz ${BUILD_SCRIPT} \
-            --workspace ${SAMPLES_DIR} \
-            --application ${APPLICATION} \
-            --outDir ${OUTPUT_DIR} \
-            --hlq ${HLQ} \
-            ${BUILD_MODE}
-          "
+         echo "Running a test command"
+
+
+      # - name: Execute Command on z/OS Machine
+      #   run: |
+      #     plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
+      #     export JAVA_HOME=${{ env.JAVA_HOME }} &&
+      #     export PATH=${{ env.PATH }} &&
+      #     echo 'Environment variables set successfully.' &&
+      #     echo 'Workspace directory: ${WORKSPACE_DIR}' &&
+      #     echo 'Samples directory: ${SAMPLES_DIR}' &&
+      #     echo 'Output directory: ${OUTPUT_DIR}' &&
+      #     /dbbibm/dbbv2.0.2/bin/groovyz ${BUILD_SCRIPT} \
+      #       --workspace ${SAMPLES_DIR} \
+      #       --application ${APPLICATION} \
+      #       --outDir ${OUTPUT_DIR} \
+      #       --hlq ${HLQ} \
+      #       ${BUILD_MODE}
+          # "
