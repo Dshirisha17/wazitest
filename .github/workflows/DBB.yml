@@ -19,14 +19,14 @@ jobs:
           echo 'Environment variables set successfully.'
 
           # Define working directories
-          WORKSPACE_DIR='/u/ibmuser/dbbwazi1/dbb-zappbuild'
-          SAMPLES_DIR='\${WORKSPACE_DIR}/samples'
-          OUTPUT_DIR='\${WORKSPACE_DIR}/build/out/APP4'
-          BUILD_SCRIPT='\${WORKSPACE_DIR}/build.groovy'
+          WORKSPACE_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild
+          SAMPLES_DIR: ${WORKSPACE_DIR}/samples
+          OUTPUT_DIR:' ${WORKSPACE_DIR}/build/out/APP4
+          BUILD_SCRIPT: ${WORKSPACE_DIR}/build.groovy
 
-          echo 'Workspace directory: \${WORKSPACE_DIR}'
-          echo 'Samples directory: \${SAMPLES_DIR}'
-          echo 'Output directory: \${OUTPUT_DIR}'
+          echo 'Workspace directory: ${WORKSPACE_DIR}'
+          echo 'Samples directory: ${SAMPLES_DIR}'
+          echo 'Output directory: ${OUTPUT_DIR}'
 
           # Execute the build script
           /dbbibm/dbbv2.0.2/bin/groovyz \${BUILD_SCRIPT} \
