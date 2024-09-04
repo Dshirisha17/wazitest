@@ -31,4 +31,4 @@ jobs:
       #   run: ${{ env.DBB_login }} "git clone ${{ env.MyRepo }} ${{ env.MyWorkDir }} && cd ${{ env.MyWorkDir }} && git checkout ${{ env.MyBranch }}"
 
       - name: DBB Impact Build
-        run: ${{ env.DBB_login }} "bash ${env.DBB_Build} ${env.MyWorkDir} ${env.MyWorkSpace} ${env.MyApplication} ${env.MyHlq} --fullBuild"
+        run: ${{ env.DBB_login }} "${env.DBB_Build} ${env.MyWorkDir} ${env.MyWorkSpace} ${env.MyApplication} ${env.MyHlq} --fullBuild"
