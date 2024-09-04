@@ -7,6 +7,18 @@ jobs:
   ssh-login:
     runs-on: self-hosted
 
+    env:
+      # Define environment variables for the SSH command
+      JAVA_HOME: /usr/lpp/java/J8.0_64
+      PATH: /usr/lpp/java/J8.0_64/bin:/Rocket/rsusr/ported/bin:$PATH
+      WORKSPACE_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild
+      SAMPLES_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild/samples
+      OUTPUT_DIR: /u/ibmuser/dbbwazi1/dbb-zappbuild/build/out/APP4
+      BUILD_SCRIPT: /u/ibmuser/dbbwazi1/dbb-zappbuild/build.groovy
+      APPLICATION: APP4
+      HLQ: ADCDK.NEXTGEN.LOAD
+      BUILD_MODE: --fullBuild
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -14,22 +26,17 @@ jobs:
       - name: Execute Command on z/OS Machine
         run: |
           plink.exe -ssh -batch ibmuser@10.10.1.180 -P 2222 -pw s3cure "
-          export JAVA_HOME=/usr/lpp/java/J8.0_64 &&
-          export PATH=\$JAVA_HOME/bin:/Rocket/rsusr/ported/bin:\$PATH &&
+          export JAVA_HOME=${{ env.JAVA_HOME }} &&
+          export PATH=${{ env.PATH }} &&
           echo 'Environment variables set successfully.' &&
-          # Define working directories
-          WORKSPACE_DIR=/u/ibmuser/dbbwazi1/dbb-zappbuild &&
-          SAMPLES_DIR=\${WORKSPACE_DIR}/samples &&
-          OUTPUT_DIR=\${WORKSPACE_DIR}/build/out/APP4 &&
-          BUILD_SCRIPT=\${WORKSPACE_DIR}/build.groovy &&
-          echo 'Workspace directory: \${WORKSPACE_DIR}' &&
-          echo 'Samples directory: \${SAMPLES_DIR}' &&
-          echo 'Output directory: \${OUTPUT_DIR}' &&
+          echo 'Workspace directory: ${WORKSPACE_DIR}' &&
+          echo 'Samples directory: ${SAMPLES_DIR}' &&
+          echo 'Output directory: ${OUTPUT_DIR}' &&
           # Execute the build script
-          /dbbibm/dbbv2.0.2/bin/groovyz \${BUILD_SCRIPT} \
-            --workspace \${SAMPLES_DIR} \
-            --application APP4 \
-            --outDir \${OUTPUT_DIR} \
-            --hlq ADCDK.NEXTGEN.LOAD \
-            --fullBuild
+          /dbbibm/dbbv2.0.2/bin/groovyz ${BUILD_SCRIPT} \
+            --workspace ${SAMPLES_DIR} \
+            --application ${APPLICATION} \
+            --outDir ${OUTPUT_DIR} \
+            --hlq ${HLQ} \
+            ${BUILD_MODE}
           "
