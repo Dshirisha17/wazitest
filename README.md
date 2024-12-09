@@ -5,7 +5,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 const config = require('./config'); // Import the configuration file
 
-const configureApp = (port, target, staticFolder) => {
+const configureApp = (port, target, staticFolder, hostIP) => {
   const app = express();
 
   // Serve static files
@@ -28,8 +28,8 @@ const configureApp = (port, target, staticFolder) => {
   });
 
   // Start the server
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  app.listen(port, hostIP, () => {
+    console.log(`Server running on http://${hostIP}:${port}`);
   });
 
   return app;
@@ -39,27 +39,26 @@ const configureApp = (port, target, staticFolder) => {
 config.servers.forEach(({ port, targetPort, staticFolder }) => {
   const targetURL = `http://${config.hostIP}:${targetPort}`;
   const staticFolderPath = path.join(__dirname, staticFolder); // Resolve static folder path
-  configureApp(port, targetURL, staticFolderPath);
+  configureApp(port, targetURL, staticFolderPath, config.hostIP);
 });
+
 
 
 
 config.js
 
-// config.js
-
 module.exports = {
-  hostIP: '10.10.1.174', // IP address
+  hostIP: '10.10.1.174', // Replace with your machine's IP address
   servers: [
     {
-      port: 204,
-      targetPort: 5040,
-      staticFolder: 'public',
+      port: 204, // Server port
+      targetPort: 5040, // Proxy target port
+      staticFolder: 'public', // Static folder
     },
     {
-      port: 182,
-      targetPort: 5040,
-      staticFolder: 'public',
+      port: 182, // Server port
+      targetPort: 5040, // Proxy target port
+      staticFolder: 'public', // Static folder
     },
   ],
 };
