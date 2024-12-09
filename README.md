@@ -3,7 +3,7 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
-const configs = require('./config'); // Import the configuration file
+const config = require('./config'); // Import the configuration file
 
 const configureApp = (port, target, staticFolder) => {
   const app = express();
@@ -35,27 +35,32 @@ const configureApp = (port, target, staticFolder) => {
   return app;
 };
 
-// Dynamically create servers based on configurations
-configs.forEach(({ port, target, staticFolder }) => {
-  const staticFolderPath = path.join(__dirname, staticFolder); // Resolve the static folder path
-  configureApp(port, target, staticFolderPath);
+// Read configuration and start servers
+config.servers.forEach(({ port, targetPort, staticFolder }) => {
+  const targetURL = `http://${config.hostIP}:${targetPort}`;
+  const staticFolderPath = path.join(__dirname, staticFolder); // Resolve static folder path
+  configureApp(port, targetURL, staticFolderPath);
 });
+
 
 
 config.js
 
 // config.js
 
-module.exports = [
+module.exports = {
+  hostIP: '10.10.1.174', // IP address
+  servers: [
     {
       port: 204,
-      target: 'http://10.10.1.204:5040', // Target URL for 204
-      staticFolder: 'public',           // Path to static files
+      targetPort: 5040,
+      staticFolder: 'public',
     },
     {
       port: 182,
-      target: 'http://10.10.1.182:5040', // Target URL for 182
-      staticFolder: 'public',           // Path to static files
+      targetPort: 5040,
+      staticFolder: 'public',
     },
-  ];
-  
+  ],
+};
+
