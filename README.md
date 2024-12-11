@@ -54,3 +54,24 @@ servers.forEach(({ port, target, staticFolder }) => {
   const staticFolderPath = path.join(__dirname, staticFolder); // Resolve the static folder path
   configureApp(ip, port, target, staticFolderPath);
 });
+
+{
+  "name": "cardservice",
+  "version": "1.0.0",
+  "description": "A Node.js application serving static files on multiple ports using Express.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["express", "static-files", "nodejs", "multiple-ports"],
+  "author": "shirisha",
+  "license": "MIT"
+}
+
