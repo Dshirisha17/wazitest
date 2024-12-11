@@ -1,9 +1,24 @@
+module.exports = {
+  ip: '10.10.1.174', // Dynamic IP address
+  servers: [
+    {
+      port: 204,
+      target: 'http://10.10.1.204:5040', // Target URL for 204
+      staticFolder: 'public',           // Path to static files
+    },
+    {
+      port: 182,
+      target: 'http://10.10.1.182:5040', // Target URL for 182
+      staticFolder: 'public',           // Path to static files
+    },
+  ],
+};
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
-const configs = require('./config'); // Import the configuration file
+const config = require('./config'); // Import the configuration file
 
-const configureApp = (port, target, staticFolder) => {
+const configureApp = (ip, port, target, staticFolder) => {
   const app = express();
 
   // Serve static files
@@ -25,28 +40,17 @@ const configureApp = (port, target, staticFolder) => {
     res.sendFile(path.resolve(staticFolder, 'index.html'));
   });
 
-  // Start the server on 10.10.1.174
-  app.listen(port, '10.10.1.174', () => {
-    console.log(`Server running on http://10.10.1.174:${port}`);
+  // Start the server
+  app.listen(port, ip, () => {
+    console.log(`Server running on http://${ip}:${port}`);
   });
 
   return app;
 };
 
 // Dynamically create servers based on configurations
-configs.forEach(({ port, target, staticFolder }) => {
+const { ip, servers } = config;
+servers.forEach(({ port, target, staticFolder }) => {
   const staticFolderPath = path.join(__dirname, staticFolder); // Resolve the static folder path
-  configureApp(port, target, staticFolderPath);
+  configureApp(ip, port, target, staticFolderPath);
 });
-module.exports = [
-  {
-    port: 204,
-    target: 'http://10.10.1.204:5040', // Target URL for 204
-    staticFolder: 'public',           // Path to static files
-  },
-  {
-    port: 182,
-    target: 'http://10.10.1.182:5040', // Target URL for 182
-    staticFolder: 'public',           // Path to static files
-  },
-];
