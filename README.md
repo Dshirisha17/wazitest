@@ -1,5 +1,3 @@
-# wazitest
-
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
@@ -40,20 +38,15 @@ configs.forEach(({ port, target, staticFolder }) => {
   const staticFolderPath = path.join(__dirname, staticFolder); // Resolve the static folder path
   configureApp(port, target, staticFolderPath);
 });
-
-
 module.exports = [
-    {
-      port: 204,
-      target: 'http://10.10.1.204:5040', // Target URL for 204
-      staticFolder: 'public',           // Path to static files
-    },
-    {
-      port: 182,
-      target: 'http://10.10.1.182:5040', // Target URL for 182
-      staticFolder: 'public',           // Path to static files
-    },
-  ];
-  
-
-Node.js v20.15.0
+  {
+    port: 204,
+    target: 'http://10.10.1.204:5040', // Target URL for 204
+    staticFolder: 'public',           // Path to static files
+  },
+  {
+    port: 182,
+    target: 'http://10.10.1.182:5040', // Target URL for 182
+    staticFolder: 'public',           // Path to static files
+  },
+];
