@@ -5,10 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.WebElement;
+
 import dev.galasa.AfterClass;
 import dev.galasa.BeforeClass;
 import dev.galasa.Test;
-import dev.galasa.selenium.IChromeOptions;
 import dev.galasa.selenium.IWebDriver;
 import dev.galasa.selenium.IWebPage;
 import dev.galasa.selenium.SeleniumManagerException;
@@ -26,33 +27,21 @@ public class TestE2etesting {
 
     @BeforeClass
     public void setUp() throws SeleniumManagerException {
-        // Configure ChromeOptions
-        IChromeOptions chromeOptions = webDriver.getChromeOptions();
-        chromeOptions.addArgument("--headless");                      // Headless mode
-        chromeOptions.addArgument("--disable-gpu");                   // Disable GPU usage
-        chromeOptions.addArgument("--no-sandbox");                    // Disable sandbox
-        chromeOptions.addArgument("--disable-dev-shm-usage");         // Prevent shared memory issues in Docker
-        chromeOptions.addArgument("--remote-debugging-port=9222");    // Remote debugging on port 9222
-        chromeOptions.addArgument("--disable-software-rasterizer");   // Disable software rasterizer
-        chromeOptions.addArgument("--disable-notifications");         // Disable notifications
-        chromeOptions.addArgument("--start-maximized");               // Start browser maximized
-
         // Allocate the web page and open the target URL
         webPage = webDriver.allocateWebPage("http://10.10.1.135:200");
         failureMessages = new ArrayList<>(); // Initialize the failure messages list
-
-        // Log the browser capabilities if needed
-        System.out.println("Browser capabilities: " + webDriver.getCapabilities());
     }
 
     @AfterClass
     public void tearDown() {
         try {
-            if (webDriver != null) {
-                webDriver.closeAllWindows(); // Close all browser windows
+            if (webDriver != null && webDriver instanceof org.openqa.selenium.WebDriver) {
+                ((org.openqa.selenium.WebDriver) webDriver).quit(); // Cast to Selenium WebDriver and quit
+            } else {
+                System.err.println("webDriver is not an instance of Selenium WebDriver.");
             }
         } catch (Exception e) {
-            System.err.println("Failed to close the WebDriver: " + e.getMessage());
+            System.err.println("Failed to quit the WebDriver: " + e.getMessage());
         }
 
         // Log any failure messages that were collected during the tests
@@ -91,7 +80,123 @@ public class TestE2etesting {
         }
     }
 
-    // Add other test cases here...
+    @Test
+    public void verifyBalance() {
+        boolean hasErrors = false; // Flag to track if any balances failed validation
+        List<String> balanceFailureMessages = new ArrayList<>(); // List to collect balance failure messages
+
+        try {
+            System.out.println("Clicking on the current account link.");
+            webPage.findElementByCssSelector(".bank").click(); // Click the current account link
+            waitForUrlContains("/transaction"); // Ensure we're on the right page
+
+            // Wait for the balance cells container to be present
+            WebElement balanceCellsContainer = webPage.findElementByCssSelector(".table-container");
+            waitForElementToBePresent(balanceCellsContainer); // Custom method to wait for element presence
+            System.out.println("Balance cells container found.");
+
+            // Locate all balance column cells using CSS selector
+            List<WebElement> balanceColumnCells = webPage.findElementsByCssSelector(".table-container td:nth-child(6)");
+            System.out.println("Number of balance cells found: " + balanceColumnCells.size());
+
+            for (int i = 0; i < balanceColumnCells.size(); i++) {
+                String balanceText = balanceColumnCells.get(i).getText().trim();
+                System.out.println("Balance for transaction " + (i + 1) + ": " + balanceText);
+
+                try {
+                    String cleanedBalanceText = balanceText.replace("USD", "").replace(",", "").trim();
+                    float balanceValue = Float.parseFloat(cleanedBalanceText);
+                    System.out.println("Parsed Balance for Transaction " + (i + 1) + ": " + balanceValue);
+
+                    // Check if the balance is zero and log a failure without throwing an exception
+                    if (balanceValue == 0) {
+                        hasErrors = true;
+                        String failureMessage = "Balance is displayed as zero for transaction row " + (i + 1);
+                        balanceFailureMessages.add(failureMessage);
+                        System.err.println(failureMessage); // Log the failure
+                    }
+
+                } catch (NumberFormatException e) {
+                    String errorMessage = "Error parsing balance for transaction row " + (i + 1) + ": " + e.getMessage();
+                    balanceFailureMessages.add(errorMessage);
+                    System.err.println(errorMessage); // Log the parsing error
+                }
+            }
+
+            // Log overall result after processing all balances
+            if (hasErrors) {
+                System.err.println("Test case 'verifyBalance' completed with failures: " + balanceFailureMessages.size());
+                balanceFailureMessages.forEach(System.err::println); // Print all failure messages
+            } else {
+                System.out.println("All balances are non-zero. Test passed.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Test case 'verifyBalance' encountered an unexpected error: " + e.getMessage());
+            hasErrors = true; // Mark as having errors
+        } finally {
+            if (hasErrors) {
+                // Instead of throwing an exception, we log the errors and record the failure
+                System.err.println("Balance verification failed with messages: " + balanceFailureMessages);
+                // You can choose to use an assertion here if you want to log this as a failure but continue executing tests.
+                // Uncomment the line below if you wish to treat this as a test failure.
+                 assertThat(balanceFailureMessages).isEmpty();
+            }
+        }
+    }
+
+    @Test
+    public void backButtonFunctionality() {
+        try {
+            System.out.println("Testing back button functionality.");
+            webPage.findElementByCssSelector(".back-button").click();
+            waitForUrlContains("/dashboard");
+
+            System.out.println("Back button functionality verified. Current URL: " + webPage.getCurrentUrl());
+            assertThat(webPage.getCurrentUrl()).contains("/dashboard");
+        } catch (Exception e) {
+            String message = "Test case 'backButtonFunctionality' failed: " + e.getMessage();
+            System.err.println(message);
+            failureMessages.add(message); // Collect failure message
+        }
+    }
+
+    @Test
+    public void logoutFunctionality() {
+        try {
+            System.out.println("Testing logout functionality.");
+            webPage.findElementById("logout_button").click();
+            waitForUrlContains("/home");
+
+            System.out.println("Logout successful. Current URL: " + webPage.getCurrentUrl());
+            assertThat(webPage.getCurrentUrl()).contains("/home");
+        } catch (Exception e) {
+            String message = "Test case 'logoutFunctionality' failed: " + e.getMessage();
+            System.err.println(message);
+            failureMessages.add(message); // Collect failure message
+        }
+    }
+
+    // Custom method to wait for an element to be present
+    private void waitForElementToBePresent(WebElement element) {
+        int attempts = 0;
+        final int maxAttempts = 10; // Maximum number of attempts
+        final int waitTime = 1000; // Wait time in milliseconds
+
+        while (attempts < maxAttempts) {
+            if (element.isDisplayed()) {
+                return; // Element is present and displayed
+            }
+            attempts++;
+            try {
+                Thread.sleep(waitTime); // Wait before retrying
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore interrupted status
+                throw new RuntimeException("Thread was interrupted during wait.", e);
+            }
+        }
+        System.err.println("Element was not found after waiting: " + element);
+    }
 
     private void waitForElementVisibility(String elementId) throws SeleniumManagerException {
         long startTime = System.currentTimeMillis();
@@ -122,3 +227,4 @@ public class TestE2etesting {
         }
     }
 }
+
